@@ -27,12 +27,7 @@ class DatabaseSeeder extends Seeder
         $clients = User::factory()->count(3)->create(['role' => 'client']);
 
         $clients->each(function ($client) {
-            Cart::factory()->create([
-                'user_id' => $client->id,
-                'status' => 'pending',
-            ]);
-
-            $completedCart = Cart::factory()->create([
+            $pendingCart = Cart::factory()->create([
                 'user_id' => $client->id,
                 'status' => 'pending',
             ]);
@@ -41,7 +36,7 @@ class DatabaseSeeder extends Seeder
 
             foreach ($products as $product) {
                 CartItem::factory()->create([
-                    'cart_id' => $completedCart->id,
+                    'cart_id' => $pendingCart->id,
                     'product_id' => $product->id,
                     'quantity' => rand(1, 2),
                 ]);
@@ -62,8 +57,6 @@ class DatabaseSeeder extends Seeder
 
                 $product->decrement('stock', 1);
             }
-
-            $completedCart->update(['status' => 'completed']);
         });
     }
 }
