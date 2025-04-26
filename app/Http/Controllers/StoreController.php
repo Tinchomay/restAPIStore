@@ -189,4 +189,54 @@ class StoreController extends Controller
             ], 500);
         }
     }
+
+    public function getStoreSales(Request $request)
+    {
+        try {
+            $stores = Store::with(['products' => function ($query) {
+                $query->with(['orderItems' => function ($query) {
+                    $query->with('order.user');
+                }]);
+            }])
+            ->where('user_id', Auth::id())
+            ->get();
+
+            $salesData = $stores->map(function ($store) {
+                $totalSales = 0;
+                $totalItemsSold = 0;
+                $orders = [];
+
+                foreach ($store->products as $product) {
+                    foreach ($product->orderItems as $orderItem) {
+                        $totalSales += $orderItem->price_at_purchase * $orderItem->quantity;
+                        $totalItemsSold += $orderItem->quantity;
+
+                        $orders[$orderItem->order_id] = $orderItem->order;
+                    }
+                }
+
+                return [
+                    'store_id' => $store->id,
+                    'store_name' => $store->name,
+                    'total_products' => $store->products->count(),
+                    'total_sales' => $totalSales,
+                    'total_items_sold' => $totalItemsSold,
+                    'total_orders' => count($orders),
+                    'orders' => array_values($orders)
+                ];
+            });
+
+            return response()->json([
+                'stores' => $salesData,
+                'total_stores' => $stores->count(),
+                'grand_total_sales' => $salesData->sum('total_sales')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener las ventas por tienda',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

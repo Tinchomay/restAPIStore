@@ -34,6 +34,9 @@ Route::prefix('auth')->group(function () {
 
 //cruds vendedores
 Route::middleware(['auth:sanctum', 'seller', ])->group(function () {
+    //ventas por sucursales del vendedor
+    Route::get('/stores/sales', [StoreController::class, 'getStoreSales']);
+
     Route::apiResource('stores', StoreController::class);
 
     Route::prefix('stores/{store}')->middleware('store.owner')->group(function () {
