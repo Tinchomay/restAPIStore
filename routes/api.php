@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
@@ -37,5 +38,11 @@ Route::middleware(['auth:sanctum', 'seller', ])->group(function () {
     Route::prefix('stores/{store}')->middleware('store.owner')->group(function () {
         Route::apiResource('products', ProductController::class);
     });
+});
+
+//crud carrito
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/cart/items', [CartController::class, 'addItem']);
+    Route::delete('/cart/items/{product}', [CartController::class, 'removeItem']);
 });
 
