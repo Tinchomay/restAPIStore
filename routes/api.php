@@ -49,5 +49,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     //finalizar compra
     Route::post('/checkout', [OrderController::class, 'checkout']);
+
+    //ver mis compras
+    Route::get('/orders', [OrderController::class, 'getOrders']);
 });
 

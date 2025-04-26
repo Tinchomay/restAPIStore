@@ -93,4 +93,25 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    public function getOrders()
+    {
+        try {
+            $orders = Order::with(['items.product'])
+                ->where('user_id', Auth::id())
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'orders' => $orders,
+                'total_orders' => $orders->count()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el historial de compras',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
