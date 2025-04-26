@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//auth
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])
         ->name('auth.register');
@@ -25,5 +27,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])
         ->middleware('auth:sanctum')
         ->name('auth.logout');
+});
+
+//cruds vendedores
+Route::middleware(['auth:sanctum', 'seller'])->group(function () {
+    Route::apiResource('stores', StoreController::class);
 });
 
