@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,7 +31,11 @@ Route::prefix('auth')->group(function () {
 });
 
 //cruds vendedores
-Route::middleware(['auth:sanctum', 'seller'])->group(function () {
+Route::middleware(['auth:sanctum', 'seller', ])->group(function () {
     Route::apiResource('stores', StoreController::class);
+
+    Route::prefix('stores/{store}')->middleware('store.owner')->group(function () {
+        Route::apiResource('products', ProductController::class);
+    });
 });
 
